@@ -5,12 +5,19 @@ import sys
 
 # YOUR FUNCTIONS GO HERE -------------------------------------
 
+def find_alignment(seq1, seq2):
+    backtrack_matrix = [[None for x in range(len(seq1) + 1)] for y in range(len(seq2) + 1)]
+    scoring_matrix = [[None for x in range(len(seq1) + 1)] for y in range(len(seq2) + 1)]
+    directions = {"L": (-1, 0), "U": (0, -1), "D": (-1, -1)}
 
+    #fill in top row and top column then repeat for top-1 row and top-1 column
+    #... until reach 1x1 bottom right corner
+
+    
+    print(backtrack_matrix)
+    pass
 
 # ------------------------------------------------------------
-
-
-
 # DO NOT EDIT ------------------------------------------------
 # Given an alignment, which is two strings, display it
 
