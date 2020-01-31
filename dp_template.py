@@ -5,7 +5,72 @@ import sys
 
 # YOUR FUNCTIONS GO HERE -------------------------------------
 
+class Matrix:
+    def __init__(self, rows, columns):
+        self.data = []
+        
+        for x in range(rows):
+            self.data.append(["" for y in range(columns)])
 
+    def __str__(self):
+        out = ""
+        
+        for row in self.data:
+            if out != "":
+                out += "\n"
+                
+            out += str(row)
+
+        return out
+
+    def __repr__(self):
+        return str(self)
+
+    def update(self, row, col, value):
+        """
+        Update a single cell of the matrix uses conventional numbering
+        such that A(1, 1) is the upper-rightmost element and A(n, m) is
+        the lower-leftmost element
+        """
+        if col > len(self.data[0]) or col < 1:
+            raise IndexError
+
+        if row > len(self.data) or row < 1:
+            raise IndexError
+
+        self.data[row - 1][col - 1] = value
+
+def find_local_alignment(seq1, seq2):
+    scoring_mtx = Matrix(len(seq1) + 1, len(seq2) + 1)
+    backtrack_mtx = Matrix(len(seq1) + 1, len(seq2) + 1)
+    print(scoring_mtx)
+    print()
+    print(backtrack_mtx)
+
+    for x in range(len(seq1) + 1):
+        #fill row then fill col then fill 1 diagonal
+        for y in range(x, len(seq1) + 1):l
+            #do s(x,y) and s(y,x)
+
+def s(x, y, scoring_matrix):
+    pass
+            
+def score(c1, c2):
+    if c1 == c2:
+        if c1 == "A":
+            return 3
+        elif c1 == "C":
+            return 2
+        elif c1 == "G":
+            return 1
+        elif c1 == "T":
+            return 2
+        #matching gaps shouldn't happen
+    else:
+        if c1 == "-" or c2 == "-":
+            return -4
+        else:
+            return -3        
 
 # ------------------------------------------------------------
 
