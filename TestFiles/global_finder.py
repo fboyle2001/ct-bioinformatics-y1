@@ -92,6 +92,10 @@ def find_local_alignment(seq1, seq2):
         backtrack.update(0, j, "L")
 
     #now fill in each submatrix constantly getting smaller
+    #will then need to correct at the end since r != c length
+
+    #print(scoring)
+    #print()
 
     for i in range(1, scoring.col_length()):
         for j in range(1, scoring.row_length()):
@@ -108,8 +112,15 @@ def find_local_alignment(seq1, seq2):
 
             scoring.update(i, j, max(up, left, diagonal))
 
+    #print(scoring)
+    #print()
+    #print(backtrack)
+    #print()
+
     x = backtrack.col_length() - 1
     y = backtrack.row_length() - 1
+
+    #print(x, y, scoring.get(x, y))
 
     movement = {"U": (0, -1), "L": (-1, 0), "D": (-1, -1)}
     
@@ -117,9 +128,15 @@ def find_local_alignment(seq1, seq2):
     cseq1 = ""
     cseq2 = ""
 
+    #print(backtrack)
+    #print(backtrack.get(2, 3))
+    #print(backtrack.get(3, 2))
+    #print()
+
     alignment_score = scoring.get(x, y)
     
     while last_direction != "E":
+        #print(backtrack.get(x, y))
         if last_direction == "L":
             y += -1
             cseq1 = "-" + cseq1
@@ -134,7 +151,25 @@ def find_local_alignment(seq1, seq2):
             cseq1 = seq1[x] + cseq1
             cseq2 = "-" + cseq2
 
+        #print(x, y)
         last_direction = backtrack.get(x, y)
+
+    
+    #print(backtrack.get(x, y))
+
+    #print(scoring)
+    #print()
+    #print(backtrack)
+    #print()
+    #print(cseq1, cseq2)
+
+    #still need to add correction here for non-square matrix
+
+    #print(scoring)
+    #print()
+    #print(backtrack)
+
+    #now we have filled the matrix lets backtrack to find the alignment
 
     return ((cseq1, cseq2), alignment_score)
             
