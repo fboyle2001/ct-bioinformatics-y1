@@ -27,8 +27,8 @@ class Matrix:
 
     def update(self, row, col, value):
         """
-        Update a single cell of the matrix uses conventional numbering
-        such that A(1, 1) is the upper-rightmost element and A(n, m) is
+        Update a single cell of the matrix such that A(0, 0)
+        is the upper-rightmost element and A(n - 1, m - 1) is
         the lower-leftmost element
         """
         if col > self.row_length() - 1 or col < 0:
@@ -83,7 +83,8 @@ def score(c1, c2):
             return -4
         else:
             return -3
-        
+
+#5000 * 5000 in 131s
 def find_local_alignment(seq1, seq2):
     scoring = Matrix(len(seq1) + 1, len(seq2) + 1)
     backtrack = Matrix(len(seq1) + 1, len(seq2) + 1)
@@ -122,17 +123,19 @@ def find_local_alignment(seq1, seq2):
                 backtrack.update(i, j, "L")
 
             scoring.update(i, j, value)
-
+    
+    #find the maximum matrix entries coordinates
     x, y = scoring.find_max_pos()
 
-    movement = {"U": (0, -1), "L": (-1, 0), "D": (-1, -1)}
-    
+    #start from the maximum and work backwards
     last_direction = backtrack.get(x, y)
     cseq1 = ""
     cseq2 = ""
 
     alignment_score = scoring.get(x, y)
-    
+
+    #move continually until we hit an end
+    #directions represent a change in x, y coords 
     while last_direction != "E":
         if last_direction == "L":
             y += -1

@@ -4,20 +4,6 @@ import sys
 
 # YOUR FUNCTIONS GO HERE -------------------------------------
 
-<<<<<<< HEAD
-def find_alignment(seq1, seq2):
-    backtrack_matrix = [[None for x in range(len(seq1) + 1)] for y in range(len(seq2) + 1)]
-    scoring_matrix = [[None for x in range(len(seq1) + 1)] for y in range(len(seq2) + 1)]
-    directions = {"L": (-1, 0), "U": (0, -1), "D": (-1, -1)}
-
-    #fill in top row and top column then repeat for top-1 row and top-1 column
-    #... until reach 1x1 bottom right corner
-
-    
-    print(backtrack_matrix)
-    pass
-
-=======
 class Matrix:
     def __init__(self, rows, columns):
         self.data = []
@@ -41,8 +27,8 @@ class Matrix:
 
     def update(self, row, col, value):
         """
-        Update a single cell of the matrix uses conventional numbering
-        such that A(1, 1) is the upper-rightmost element and A(n, m) is
+        Update a single cell of the matrix such that A(0, 0)
+        is the upper-rightmost element and A(n - 1, m - 1) is
         the lower-leftmost element
         """
         if col > self.row_length() - 1 or col < 0:
@@ -69,6 +55,7 @@ class Matrix:
         return len(self.data[0])
 
     def find_max_pos(self):
+        t = time.time()
         max_row = 0
         max_value = 0
 
@@ -79,6 +66,8 @@ class Matrix:
                 max_row = i
 
         c_index = self.data[max_row].index(max_value)
+        d = time.time() - t
+        print("Took", d, "to find max")
         return (max_row, c_index)
 
 def score(c1, c2):
@@ -97,7 +86,8 @@ def score(c1, c2):
             return -4
         else:
             return -3
-        
+
+#5000 * 5000 in 131s
 def find_local_alignment(seq1, seq2):
     scoring = Matrix(len(seq1) + 1, len(seq2) + 1)
     backtrack = Matrix(len(seq1) + 1, len(seq2) + 1)
@@ -138,8 +128,6 @@ def find_local_alignment(seq1, seq2):
             scoring.update(i, j, value)
 
     x, y = scoring.find_max_pos()
-
-    movement = {"U": (0, -1), "L": (-1, 0), "D": (-1, -1)}
     
     last_direction = backtrack.get(x, y)
     cseq1 = ""
@@ -166,7 +154,6 @@ def find_local_alignment(seq1, seq2):
 
     return ((cseq1, cseq2), alignment_score)
 
->>>>>>> 50d6445e87e25d6075d4d74d446d11fe09c322ac
 # ------------------------------------------------------------
 # DO NOT EDIT ------------------------------------------------
 # Given an alignment, which is two strings, display it
