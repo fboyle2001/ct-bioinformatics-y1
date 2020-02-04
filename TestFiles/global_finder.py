@@ -2,22 +2,9 @@
 import time
 import sys
 
+
 # YOUR FUNCTIONS GO HERE -------------------------------------
 
-<<<<<<< HEAD
-def find_alignment(seq1, seq2):
-    backtrack_matrix = [[None for x in range(len(seq1) + 1)] for y in range(len(seq2) + 1)]
-    scoring_matrix = [[None for x in range(len(seq1) + 1)] for y in range(len(seq2) + 1)]
-    directions = {"L": (-1, 0), "U": (0, -1), "D": (-1, -1)}
-
-    #fill in top row and top column then repeat for top-1 row and top-1 column
-    #... until reach 1x1 bottom right corner
-
-    
-    print(backtrack_matrix)
-    pass
-
-=======
 class Matrix:
     def __init__(self, rows, columns):
         self.data = []
@@ -68,19 +55,7 @@ class Matrix:
     def row_length(self):
         return len(self.data[0])
 
-    def find_max_pos(self):
-        max_row = 0
-        max_value = 0
-
-        for i, row in enumerate(self.data):
-            m = max(row)
-            if m > max_value:
-                max_value = m
-                max_row = i
-
-        c_index = self.data[max_row].index(max_value)
-        return (max_row, c_index)
-
+            
 def score(c1, c2):
     if c1 == c2:
         if c1 == "A":
@@ -109,14 +84,18 @@ def find_local_alignment(seq1, seq2):
     backtrack.update(0, 0, "E")
 
     for i in range(1, scoring.col_length()):
-        scoring.update(i, 0, 0)
-        backtrack.update(i, 0, "E")
+        scoring.update(i, 0, -2 * i)
+        backtrack.update(i, 0, "U")
 
     for j in range(1, scoring.row_length()):
-        scoring.update(0, j, 0)
-        backtrack.update(0, j, "E")
+        scoring.update(0, j, -2 * j)
+        backtrack.update(0, j, "L")
 
     #now fill in each submatrix constantly getting smaller
+    #will then need to correct at the end since r != c length
+
+    #print(scoring)
+    #print()
 
     for i in range(1, scoring.col_length()):
         for j in range(1, scoring.row_length()):
@@ -124,20 +103,24 @@ def find_local_alignment(seq1, seq2):
             left = scoring.get(i, j - 1) - 4 #must match with gap
             diagonal = scoring.get(i - 1, j - 1) + score(seq1[i - 1], seq2[j - 1])
 
-            value = max(0, up, left, diagonal)
-
-            if value == 0:
-                backtrack.update(i, j, "E")
-            elif diagonal >= up and diagonal >= left:
+            if diagonal >= up and diagonal >= left:
                 backtrack.update(i, j, "D")
             elif up >= diagonal and up >= left:
                 backtrack.update(i, j, "U")
             elif left >= diagonal and left >= up:
                 backtrack.update(i, j, "L")
 
-            scoring.update(i, j, value)
+            scoring.update(i, j, max(up, left, diagonal))
 
-    x, y = scoring.find_max_pos()
+    #print(scoring)
+    #print()
+    #print(backtrack)
+    #print()
+
+    x = backtrack.col_length() - 1
+    y = backtrack.row_length() - 1
+
+    #print(x, y, scoring.get(x, y))
 
     movement = {"U": (0, -1), "L": (-1, 0), "D": (-1, -1)}
     
@@ -145,9 +128,15 @@ def find_local_alignment(seq1, seq2):
     cseq1 = ""
     cseq2 = ""
 
+    #print(backtrack)
+    #print(backtrack.get(2, 3))
+    #print(backtrack.get(3, 2))
+    #print()
+
     alignment_score = scoring.get(x, y)
     
     while last_direction != "E":
+        #print(backtrack.get(x, y))
         if last_direction == "L":
             y += -1
             cseq1 = "-" + cseq1
@@ -162,12 +151,39 @@ def find_local_alignment(seq1, seq2):
             cseq1 = seq1[x] + cseq1
             cseq2 = "-" + cseq2
 
+        #print(x, y)
         last_direction = backtrack.get(x, y)
 
-    return ((cseq1, cseq2), alignment_score)
+    
+    #print(backtrack.get(x, y))
 
->>>>>>> 50d6445e87e25d6075d4d74d446d11fe09c322ac
+    #print(scoring)
+    #print()
+    #print(backtrack)
+    #print()
+    #print(cseq1, cseq2)
+
+    #still need to add correction here for non-square matrix
+
+    #print(scoring)
+    #print()
+    #print(backtrack)
+
+    #now we have filled the matrix lets backtrack to find the alignment
+
+    return ((cseq1, cseq2), alignment_score)
+            
+
+            
+        
+
+print(find_local_alignment("ACGT", "AGT"))
+print(find_local_alignment("AGT", "ACGT"))
+
 # ------------------------------------------------------------
+
+
+
 # DO NOT EDIT ------------------------------------------------
 # Given an alignment, which is two strings, display it
 

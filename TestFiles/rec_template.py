@@ -57,9 +57,6 @@ def score(c1, c2):
         else:
             return -3
 
-def a(seq1, seq2):
-    return find_alignment(seq1, seq2, "", "", 0, 0)
-
 # ------------------------------------------------------------
 # DO NOT EDIT ------------------------------------------------
 # Given an alignment, which is two strings, display it
@@ -83,6 +80,7 @@ def displayAlignment(alignment):
 
 # DO NOT EDIT ------------------------------------------------
 # This opens the files, loads the sequences and starts the timer
+
 file1 = open(sys.argv[1], 'r')
 seq1=file1.read()
 file1.close()

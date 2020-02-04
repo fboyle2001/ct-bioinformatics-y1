@@ -4,20 +4,6 @@ import sys
 
 # YOUR FUNCTIONS GO HERE -------------------------------------
 
-<<<<<<< HEAD
-def find_alignment(seq1, seq2):
-    backtrack_matrix = [[None for x in range(len(seq1) + 1)] for y in range(len(seq2) + 1)]
-    scoring_matrix = [[None for x in range(len(seq1) + 1)] for y in range(len(seq2) + 1)]
-    directions = {"L": (-1, 0), "U": (0, -1), "D": (-1, -1)}
-
-    #fill in top row and top column then repeat for top-1 row and top-1 column
-    #... until reach 1x1 bottom right corner
-
-    
-    print(backtrack_matrix)
-    pass
-
-=======
 class Matrix:
     def __init__(self, rows, columns):
         self.data = []
@@ -166,7 +152,6 @@ def find_local_alignment(seq1, seq2):
 
     return ((cseq1, cseq2), alignment_score)
 
->>>>>>> 50d6445e87e25d6075d4d74d446d11fe09c322ac
 # ------------------------------------------------------------
 # DO NOT EDIT ------------------------------------------------
 # Given an alignment, which is two strings, display it
