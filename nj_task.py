@@ -1,6 +1,7 @@
 class Matrix:
-    def __init__(self, rows, columns, data = []):
+    def __init__(self, rows, columns, data = [], association = []):
         self.data = []
+        self.association = association
         
         if len(data) == 0:
             for x in range(rows):
@@ -17,6 +18,7 @@ class Matrix:
                 self.data.append(row)
 
     def __str__(self):
+        #pretty print the matrix
         max_char_size = 0
 
         for row in self.data:
@@ -28,33 +30,53 @@ class Matrix:
 
             if ma > max_char_size:
                 max_char_size = ma
-
+                
+        tag_len = max([len(x) for x in self.association] + [len("Sum")])
         display_rows = []
-        
+        max_char_size = max(tag_len, max_char_size)
 
+        top_row = (tag_len + 4) * " "
+
+        for tag in self.association:
+            t = (max_char_size - len(tag) + 1) * " " + tag
+            top_row += t
+
+        row_sums = []
+        
         for row in self.data:
             disp_row = []
             for char in row:
                 c = str(char)
-
                 c = (max_char_size - len(c) + 1) * " " + c
                 disp_row.append(c)
+            r_sum = sum(row)
+            row_sums.append((max_char_size - len(c) + 1) * " " + str(r_sum))
             display_rows.append(disp_row)
+
+        max_row_sum_len = max([len(str(x)) for x in row_sums])
+        top_row += (max_row_sum_len - 1) * " " + "Sum"
+        display_rows.insert(0, top_row)
 
         out = ""
 
-        for row in display_rows:
+        for i, row in enumerate(display_rows):
             if out != "":
                 out += "\n"
 
-            out += "["
-                
-            for c in row:
-                #if out[-1] != "[":
-                #    out += ","
-                out += c
+            if i == 0:
+                out += row
+            else:
+                tag = self.association[i - 1]
+                tag += (tag_len - len(tag)) * " " 
+                out += tag + " | ["
+                    
+                for c in row:
+                    #if out[-1] != "[":
+                    #    out += ","
+                    out += c
 
-            out += "]"
+                out += "] "
+                out += row_sums[i - 1]
 
         return out
 
@@ -89,19 +111,6 @@ class Matrix:
 
     def col_length(self):
         return len(self.data[0])
-
-    def find_max_pos(self):
-        max_row = 0
-        max_value = 0
-
-        for i, row in enumerate(self.data):
-            m = max(row)
-            if m > max_value:
-                max_value = m
-                max_row = i
-
-        c_index = self.data[max_row].index(max_value)
-        return (max_row, c_index)
 
     def find_min_pos(self):
         """
@@ -158,25 +167,25 @@ class Matrix:
 
         self.data = reduced_data
 
-    def add_col(self, data=[]):
-        if len(data) != self.row_length():
-            raise IndexError
-        
-        for i, row in enumerate(self.data):
-            row.append(data[i])
-            
-    def add_row(self, data=[]):
-        self.data.append(data)
-
     def replace_row(self, row, data):
         self.data[row] = data
 
     def replace_col(self, col, data):
         for i in range(0, self.col_length()):
             self.data[i][col] = data[i]
+
+    def merge_associated(self, x, y):
+        if x > y:
+            tag_y = self.association[y]
+            self.association[x] += tag_y
+            del self.association[y]
+        else:
+            tag_x = self.association[x]
+            self.association[y] += tag_x
+            del self.association[x]
         
 def NJ():
-    relations = Matrix(8, 8 , [
+    relations = Matrix(8, 8, [
             [  0,  32,  48,  51,  50,  48,  98, 148],
             [ 32,   0,  26,  34,  29,  33,  84, 136],
             [ 48,  26,   0,  42,  44,  44,  92, 152],
@@ -185,11 +194,11 @@ def NJ():
             [ 48,  33,  44,  38,  24,   0,  90, 142],
             [ 98,  84,  92,  86,  89,  90,   0, 148],
             [148, 136, 152, 142, 142, 142, 148,   0]
-        ])
+        ], ["a", "b", "c", "d", "e", "f", "g", "h"])
 
-    q_scores = Matrix(relations.row_length(), relations.col_length())
+    q_scores = Matrix(relations.row_length(), relations.col_length(), [], ["a", "b", "c", "d", "e", "f", "g", "h"])
 
-    while q_scores.row_length() != 2:
+    while q_scores.row_length() != 1:
         r = relations.row_length()
 
         for i in range(0, q_scores.col_length()):
@@ -199,8 +208,7 @@ def NJ():
                     
                 q_scores.update(i, j, q)
                 q_scores.update(j, i, q)
-        
-        print("n =", relations.col_length())
+                
         print("Relation Matrix:")
         print(relations)
         print()
@@ -226,12 +234,14 @@ def NJ():
             dab_c /= 2
             new_scores.append(dab_c)
 
-        #print("Matrix is", relations.row_length(), relations.col_length())
-
         #delete the species with a higher index in the matrix
-        #avoids having to correc min_y or min_x since they cannot equal each other
+        #avoids having to correct min_y or min_x since they cannot equal each other
+        
+        relations.merge_associated(min_x, min_y)
+        q_scores.merge_associated(min_x, min_y)
 
         if min_y > min_x:
+            #might be worth just swapping min_y and min_x?
             relations.delete_row(min_y)
             relations.delete_col(min_y)
             

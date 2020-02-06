@@ -7,10 +7,10 @@ scores = [
         [-9,  -8,-12,-16,-20,-24,-23,-27,-31],
         [-3,   3,  4,  0, -4, -8,-12,-16,-20],
         [-7,  -1,  0,  6,  2, -2, -6,-10,-14],
-        [-11, -5, -4, -1, -5, -9,-13,-17,-16],
-        [-13,-12, -6,  0,  7,  8,  4,  0,  1],
-        [-13, -7,-11,-12, -5,  2,  8,  4,  0],
-        [-17,-11, -5,  1,  8, 15, 11, 17, 13],
+        [-11, -5, -4, -1, -5, -9,-13,-10,-16],
+        [-13,-12, -6,  0,  7,  8,  4,-17,  1],
+        [-13, -7,-11,-12, -5,  2,  8,  0,  0],
+        [-17,-11, -5,  1,  8, 15, 11,  4, 13],
         [-21,-15, -9, -3,  4, 11, 12,  8, 14],
         [-29,-23,-17,-11, -9, -2,  4,  5,  6]
         
@@ -58,9 +58,8 @@ def run_tests():
 
     for combination in combinations:
         result = run_single_test(*combination)
-        inputA_no = int(combination[0].split("_")[0].split("length")[1]) - 3
-        inputB_no = int(combination[1].split("_")[0].split("length")[1]) - 3
-        print("Testing", combination)
+        inputA_no = combination[0].split("_")[0].split("length")[1] - 3
+        inputB_no = combination[1].split("_")[0].split("length")[1] - 3
         expected_score = scores[inputB_no][inputA_no]
 
         if expected_score != result.score:
@@ -132,5 +131,3 @@ def score(c1, c2):
             return -4
         else:
             return -3
-
-run_tests()
