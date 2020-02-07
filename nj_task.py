@@ -1,21 +1,9 @@
-class Matrix:
-    def __init__(self, rows, columns, data = [], association = []):
-        self.data = []
-        self.association = association
-        
-        if len(data) == 0:
-            for x in range(rows):
-                self.data.append([None for y in range(columns)])
-        else:
-            exp = -1
-            for row in data:
-                if exp == -1:
-                    exp = len(row)
-                else:
-                    if len(row) != exp:
-                        raise IndexError
+import pprint
 
-                self.data.append(row)
+class Matrix:
+    def __init__(self, data, association):
+        self.data = data
+        self.association = association
 
     def __str__(self):
         #pretty print the matrix
@@ -71,8 +59,6 @@ class Matrix:
                 out += tag + " | ["
                     
                 for c in row:
-                    #if out[-1] != "[":
-                    #    out += ","
                     out += c
 
                 out += "] "
@@ -84,26 +70,9 @@ class Matrix:
         return str(self)
 
     def update(self, row, col, value):
-        """
-        Update a single cell of the matrix such that A(0, 0)
-        is the upper-rightmost element and A(n - 1, m - 1) is
-        the lower-leftmost element
-        """
-        if col > self.col_length() - 1 or col < 0:
-            raise IndexError
-
-        if row > self.row_length() - 1 or row < 0:
-            raise IndexError
-
         self.data[row][col] = value
 
     def get(self, row, col):
-        if col > self.col_length() - 1 or col < 0:
-            raise IndexError
-
-        if row > self.row_length() - 1 or row < 0:
-            raise IndexError
-
         return self.data[row][col]
 
     def row_length(self):
@@ -177,26 +146,33 @@ class Matrix:
     def merge_associated(self, x, y):
         if x > y:
             tag_y = self.association[y]
-            self.association[x] += tag_y
+            self.association[x] = tag_y + self.association[x]
             del self.association[y]
         else:
             tag_x = self.association[x]
-            self.association[y] += tag_x
+            self.association[y] = tag_x + self.association[y]
             del self.association[x]
         
-def NJ():
-    relations = Matrix(8, 8, [
-            [  0,  32,  48,  51,  50,  48,  98, 148],
-            [ 32,   0,  26,  34,  29,  33,  84, 136],
-            [ 48,  26,   0,  42,  44,  44,  92, 152],
-            [ 51,  34,  42,   0,  44,  38,  86, 142],
-            [ 50,  29,  44,  44,   0,  24,  89, 142],
-            [ 48,  33,  44,  38,  24,   0,  90, 142],
-            [ 98,  84,  92,  86,  89,  90,   0, 148],
-            [148, 136, 152, 142, 142, 142, 148,   0]
-        ], ["a", "b", "c", "d", "e", "f", "g", "h"])
+def NJ(file_name):
+    file = open(file_name, "r")
+    lines = file.read().split("\n")
+    file.close()
 
-    q_scores = Matrix(relations.row_length(), relations.col_length(), [], ["a", "b", "c", "d", "e", "f", "g", "h"])
+    species = lines[0].split(" ")[1:]
+    relation_data = []
+    q_scores_data = []
+
+    for i in range(1, len(lines)):
+        row = lines[i].strip().split(" ")[1:]
+
+        num_row = [int(x) for x in row]
+        q_row = [None for x in num_row]
+        
+        relation_data.append(num_row)
+        q_scores_data.append(q_row)
+
+    relations = Matrix(relation_data, [x for x in species])
+    q_scores = Matrix(q_scores_data, [x for x in species])
 
     while q_scores.row_length() != 1:
         r = relations.row_length()
@@ -263,10 +239,5 @@ def NJ():
             
             relations.replace_row(min_y, new_scores)
             relations.replace_col(min_y, new_scores)
-            
-        #print("Matrix is", relations.row_length(), relations.col_length())
-        #print(relations)
 
     return relations
-
-r = NJ()

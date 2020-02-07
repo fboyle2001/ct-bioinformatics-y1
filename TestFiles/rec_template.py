@@ -8,18 +8,17 @@ import sys
 #10x10 in 30s
 #11x11 in 166s
 def find_alignment(seq1, seq2, cseq1, cseq2, cscr, count):
-    #used all characters
-    if len(seq1) == 0 and len(seq2) == 0:
+    if len(seq1) == 0 or len(seq2) == 0:
+        if len(seq1) != 0:
+            c1 = seq1[len(seq1) - 1]
+            return find_alignment(seq1[:len(seq1) - 1], seq2, c1 + cseq1, "-" + cseq2, score(c1, "-") + cscr, count)
+
+        if len(seq2) != 0:
+            c2 = seq2[len(seq2) - 1]
+            return find_alignment(seq1, seq2[:len(seq2) - 1], "-" + cseq1, c2 + cseq2, score("-", c2) + cscr, count)
+        
+        #used all characters
         return (cscr, [cseq1, cseq2], 1)
-
-    #we have used one sequence but not the other
-    if len(seq1) == 0 and len(seq2) != 0:
-        c2 = seq2[len(seq2) - 1]
-        return find_alignment(seq1, seq2[:len(seq2) - 1], "-" + cseq1, c2 + cseq2, score("-", c2) + cscr, count + 1)
-
-    if len(seq1) != 0 and len(seq2) == 0:
-        c1 = seq1[len(seq1) - 1]
-        return find_alignment(seq1[:len(seq1) - 1], seq2, c1 + cseq1, "-" + cseq2, score(c1, "-") + cscr, count + 1)
 
     #end characters, used to find the next possible sequences to check
     c1 = seq1[len(seq1) - 1]
@@ -34,15 +33,38 @@ def find_alignment(seq1, seq2, cseq1, cseq2, cscr, count):
     #case 3: try seq2_char with a gap
     case3 = find_alignment(seq1, seq2[:len(seq2) - 1], "-" + cseq1, c2 + cseq2, score("-", c2) + cscr, count)
 
+    best_score = None
+    best_index = None
+    best_align = None
+
     #put the scores in an array and find the best one
-    scores = [case1[0], case2[0], case3[0]]
-    aligns = [case1[1], case2[1], case3[1]]
+    if case1[0] >= case2[0]:
+        if case1[0] >= case3[0]:
+            best_score = case1[0]
+            best_index = 1
+            best_align = case1[1]
+        else:
+            best_score = case3[0]
+            best_index = 3
+            best_align = case3[1]
+    else:
+        if case2[0] >= case3[0]:
+            best_score = case2[0]
+            best_index = 2
+            best_align = case2[1]
+        else:
+            best_score = case3[0]
+            best_index = 3
+            best_align = case3[1]
+            
+    #scores = [case1[0], case2[0], case3[0]]
+    #aligns = [case1[1], case2[1], case3[1]]
     count += case1[2] + case2[2] + case3[2]
 
     #return these values
-    best_score = max(scores)
-    best_index = scores.index(best_score)
-    best_align = aligns[best_index]
+    #best_score = max(scores)
+    #best_index = scores.index(best_score)
+    #best_align = aligns[best_index]
 
     return (best_score, best_align, count)
 
@@ -62,6 +84,14 @@ def score(c1, c2):
             return -4
         else:
             return -3
+
+def tot_score(seq1, seq2):
+    s = 0
+
+    for i in range(0, len(seq1)):
+        s += score(seq1[i], seq2[i])
+
+    return s
 
 # ------------------------------------------------------------
 # DO NOT EDIT ------------------------------------------------
