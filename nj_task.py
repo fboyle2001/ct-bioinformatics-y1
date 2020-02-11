@@ -1,12 +1,10 @@
-import pprint
-
 class Matrix:
     def __init__(self, data, association):
         self.data = data
-        self.association = association
+        self.association = [str(x) for x in association]
 
     def __str__(self):
-        #pretty print the matrix
+        #find the longest thing
         max_char_size = 0
 
         for row in self.data:
@@ -33,10 +31,12 @@ class Matrix:
         
         for row in self.data:
             disp_row = []
+            
             for char in row:
                 c = str(char)
                 c = (max_char_size - len(c) + 1) * " " + c
                 disp_row.append(c)
+                
             r_sum = sum(row)
             row_sums.append((max_char_size - len(c) + 1) * " " + str(r_sum))
             display_rows.append(disp_row)
@@ -65,7 +65,7 @@ class Matrix:
                 out += row_sums[i - 1]
 
         return out
-
+    
     def __repr__(self):
         return str(self)
 
@@ -98,15 +98,9 @@ class Matrix:
         return (min_row, c_index)
 
     def row_sum(self, row):
-        if row > self.row_length() - 1 or row < 0:
-            raise IndexError
-
         return sum(self.data[row])
 
     def col_sum(self, col):
-        if col > self.col_length() - 1 or col < 0:
-            raise IndexError
-
         s = 0
 
         for row in self.data:
@@ -115,15 +109,9 @@ class Matrix:
         return s
 
     def delete_row(self, row):
-        if row > self.row_length() - 1 or row < 0:
-            raise IndexError
-
         del self.data[row]
 
     def delete_col(self, col):
-        if col > self.col_length() - 1 or col < 0:
-            raise IndexError
-
         reduced_data = []
 
         for row in self.data:
@@ -239,5 +227,3 @@ def NJ(file_name):
             
             relations.replace_row(min_y, new_scores)
             relations.replace_col(min_y, new_scores)
-
-    return relations
