@@ -151,7 +151,12 @@ def NJ(file_name):
     q_scores_data = []
 
     for i in range(1, len(lines)):
-        row = lines[i].strip().split(" ")[1:]
+        stripped = lines[i].strip()
+        
+        if stripped == "":
+            continue
+            
+        row = stripped.split(" ")[1:]
 
         num_row = [int(x) for x in row]
         q_row = [None for x in num_row]
@@ -161,6 +166,8 @@ def NJ(file_name):
 
     relations = Matrix(relation_data, [x for x in species])
     q_scores = Matrix(q_scores_data, [x for x in species])
+    
+    print(relations.data)
 
     while q_scores.row_length() != 1:
         r = relations.row_length()
@@ -227,3 +234,7 @@ def NJ(file_name):
             
             relations.replace_row(min_y, new_scores)
             relations.replace_col(min_y, new_scores)
+
+import sys
+name = sys.argv[1]
+NJ(name)
